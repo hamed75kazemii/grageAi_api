@@ -21,6 +21,7 @@ const auth = (req, res, next) => {
 
     next();
   } catch (er) {
+    console.log("token is invalid", er);
     return res.status(400).send({ message: "token is invalid" });
   }
 };
