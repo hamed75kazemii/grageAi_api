@@ -9,6 +9,9 @@ const insertCar = async (req, res, next) => {
     cylinder_capacity: Joi.string().max(50).required(),
     engine_model: Joi.string().max(50).required(),
     user_id: Joi.string().max(50).required(),
+    model_name: Joi.string().max(50).required(),
+    distance: Joi.string().max(50).required(),
+    gearbox_model: Joi.string().max(50).required(),
   };
   console.log(req.body.user_id);
   const validateResult = Joi.object(schema).validate(req.body);
@@ -20,6 +23,10 @@ const insertCar = async (req, res, next) => {
     req.body.produce_date,
     req.body.cylinder_capacity,
     req.body.engine_model,
+
+    req.body.model_name,
+    req.body.distance,
+    req.body.gearbox_model,
     req.body.user_id
   );
 

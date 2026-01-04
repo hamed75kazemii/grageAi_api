@@ -14,18 +14,25 @@ class CarModel {
     produce_date,
     cylinder_capacity,
     engine_model,
+
+    model_name,
+    distance,
+    gearbox_model,
     user_id
   ) => {
     const [result] = await pool.query(
       `insert into cars 
-    (id, brand_name, service_date, produce_date, cylinder_capacity, engine_model, user_id) 
-    values ( uuid() ,?,?,?,?,?,?)`,
+    (id, brand_name, service_date, produce_date, cylinder_capacity, engine_model,  model_name, distance, gearbox_model,user_id) 
+    values ( uuid() ,?,?,?,?,?,?,?,?,?)`,
       [
         brand_name,
         service_date,
         produce_date,
         cylinder_capacity,
         engine_model,
+        model_name,
+        distance,
+        gearbox_model,
         user_id,
       ]
     );
@@ -38,12 +45,15 @@ class CarModel {
     produce_date,
     cylinder_capacity,
     engine_model,
-    user_id
+    user_id,
+    model_name,
+    distance,
+    gearbox_model
   ) => {
     const [result] = await pool.query(
       `update cars 
     set brand_name = ?, service_date = ?, produce_date = ?, 
-    cylinder_capacity = ?, engine_model = ?
+    cylinder_capacity = ?, engine_model = ?, model_name = ?, distance = ?, gearbox_model = ?
     where user_id = ?`,
       [
         brand_name,
@@ -51,6 +61,10 @@ class CarModel {
         produce_date,
         cylinder_capacity,
         engine_model,
+
+        model_name,
+        distance,
+        gearbox_model,
         user_id,
       ]
     );
@@ -63,6 +77,10 @@ class CarModel {
     produce_date,
     cylinder_capacity,
     engine_model,
+    model_name,
+    distance,
+    gearbox_model,
+
     user_id
   ) => {
     const existingCar = await this.getCarByUserId(user_id);
@@ -75,6 +93,10 @@ class CarModel {
         produce_date,
         cylinder_capacity,
         engine_model,
+
+        model_name,
+        distance,
+        gearbox_model,
         user_id
       );
       return { ...result, isUpdate: true };
@@ -86,6 +108,10 @@ class CarModel {
         produce_date,
         cylinder_capacity,
         engine_model,
+
+        model_name,
+        distance,
+        gearbox_model,
         user_id
       );
       return { ...result, isUpdate: false };

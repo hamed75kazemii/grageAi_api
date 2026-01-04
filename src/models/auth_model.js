@@ -1,6 +1,13 @@
 import pool from "../utilities/mysql_database.js";
 
 class AuthModel {
+  static forgetPassword = async (email, forgetPasswordToken) => {
+    const [result] = await pool.query(
+      "update users set forget_password_token = ? where email = ?",
+      [forgetPasswordToken, email]
+    );
+    return result;
+  };
   static updateUser = async (email, verificationToken, name, password) => {
     const fields = [];
     const values = [];
@@ -17,6 +24,8 @@ class AuthModel {
       fields.push("name = ?");
       values.push(name);
     }
+
+    fields.push("forget_password_token = NULL");
 
     const sql = `
         UPDATE users

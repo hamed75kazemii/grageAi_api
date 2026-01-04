@@ -5,7 +5,10 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 import crypto from "crypto";
-import { sendVerificationEmail } from "../utilities/email_service.js";
+import {
+  sendVerificationEmail,
+  sendForgotPasswordEmail,
+} from "../utilities/email_service.js";
 
 dotenv.config();
 
@@ -194,4 +197,78 @@ const verifyEmail = async (req, res, next) => {
   }
 };
 
-export { register, login, verifyEmail };
+const forgetPassword = async (req, res, next) => {
+  try {
+    const schema = {
+      email: Joi.string().email().required(),
+    };
+    const validateResult = Joi.object(schema).validate(req.body);
+    if (validateResult.error) throw validateResult.error;
+
+    // تولید کد تأیید 6 رقمی
+    const verificationCode = Math.floor(
+      100000 + Math.random() * 900000
+    ).toString();
+
+    const user = await AuthModel.getUserByEmail(req.body.email);
+    if (!user) return res.status(400).send({ message: "email is invalid" });
+
+    try {
+      const result = await sendForgotPasswordEmail(
+        req.body.email,
+        verificationCode
+      );
+
+      if (result.success) {
+        const result = await AuthModel.forgetPassword(
+          req.body.email,
+          verificationCode
+        );
+        if (result.affectedRows === 0)
+          return res.status(400).send({ message: "error in forget password" });
+
+        return res.status(200).send({ message: "forget password success" });
+      }
+    } catch (emailError) {
+      console.error("Error sending forgot password email:", emailError);
+      return res
+        .status(500)
+        .send({ message: "error sending forgot password email" });
+    }
+  } catch (error) {
+    console.error("Forget password error:", error);
+    res.status(500).send({ message: "error in forget password" });
+  }
+};
+
+const resetPassword = async (req, res, next) => {
+  try {
+    const schema = {
+      email: Joi.string().email().required(),
+      code: Joi.string().length(6).required(),
+      password: Joi.string().min(5).max(50).required(),
+    };
+    const validateResult = Joi.object(schema).validate(req.body);
+    if (validateResult.error) throw validateResult.error;
+
+    const { email, code, password } = req.body;
+
+    const user = await AuthModel.getUserByEmail(email);
+    if (!user) return res.status(400).send({ message: "email is invalid" });
+
+    if (user.forget_password_token !== code) {
+      return res.status(400).send({ message: "code is invalid" });
+    }
+
+    const hashPassword = await bcrypt.hash(password, 10);
+    const result = await AuthModel.updateUser(email, null, null, hashPassword);
+    if (result.affectedRows === 0)
+      return res.status(400).send({ message: "error in reset password" });
+
+    return res.status(200).send({ message: "reset password success" });
+  } catch (error) {
+    console.error("Reset password error:", error);
+    res.status(500).send({ message: "error in reset password" });
+  }
+};
+export { register, login, verifyEmail, forgetPassword, resetPassword };
