@@ -45,10 +45,11 @@ class CarModel {
     produce_date,
     cylinder_capacity,
     engine_model,
-    user_id,
+
     model_name,
     distance,
-    gearbox_model
+    gearbox_model,
+    user_id
   ) => {
     const [result] = await pool.query(
       `update cars 
@@ -86,6 +87,7 @@ class CarModel {
     const existingCar = await this.getCarByUserId(user_id);
 
     if (existingCar) {
+      console.log("update existing car");
       // Update existing car
       const result = await this.updateCar(
         brand_name,
@@ -101,6 +103,7 @@ class CarModel {
       );
       return { ...result, isUpdate: true };
     } else {
+      console.log("insert new car");
       // Insert new car
       const result = await this.insertCar(
         brand_name,
@@ -116,6 +119,15 @@ class CarModel {
       );
       return { ...result, isUpdate: false };
     }
+  };
+
+  static removeCar = async (user_id) => {
+    console.log(user_id);
+    const [result] = await pool.query("delete from cars where user_id = ?", [
+      user_id,
+    ]);
+    console.log(result);
+    return result;
   };
 }
 export default CarModel;

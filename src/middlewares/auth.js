@@ -17,8 +17,6 @@ const auth = (req, res, next) => {
   try {
     const decode = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
 
-    req.body.user_id = decode.id;
-
     next();
   } catch (er) {
     console.log("token is invalid", er);
@@ -26,4 +24,18 @@ const auth = (req, res, next) => {
   }
 };
 
-export default auth;
+const getUserId = (req) => {
+  let token = req.header("Authorization");
+  const bearerPrefix = "Bearer ";
+  let actualToken =
+    token && token.startsWith(bearerPrefix)
+      ? token.slice(bearerPrefix.length)
+      : token;
+
+  token = actualToken;
+
+  const decode = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+  return decode.id;
+};
+
+export { auth, getUserId };

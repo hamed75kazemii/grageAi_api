@@ -1,19 +1,21 @@
 import CarModel from "../models/car_model.js";
 import Joi from "joi";
+import { getUserId } from "../middlewares/auth.js";
 
 const insertCar = async (req, res, next) => {
+  const user_id = getUserId(req);
   const schema = {
     brand_name: Joi.string().max(50).required(),
     service_date: Joi.date().required(),
     produce_date: Joi.date().required(),
     cylinder_capacity: Joi.string().max(50).required(),
     engine_model: Joi.string().max(50).required(),
-    user_id: Joi.string().max(50).required(),
+    //  user_id: Joi.string().max(50).required(),
     model_name: Joi.string().max(50).required(),
     distance: Joi.string().max(50).required(),
     gearbox_model: Joi.string().max(50).required(),
   };
-  console.log(req.body.user_id);
+
   const validateResult = Joi.object(schema).validate(req.body);
   if (validateResult.error) throw validateResult.error;
 
@@ -27,11 +29,11 @@ const insertCar = async (req, res, next) => {
     req.body.model_name,
     req.body.distance,
     req.body.gearbox_model,
-    req.body.user_id
+    user_id
   );
 
   if (result.affectedRows === 0)
-    return res.status(400).send({ message: "car operation failed" });
+    return res.status(400).send({ message: "car operation failed 1" });
 
   const message = result.isUpdate
     ? "car updated successfully"
@@ -39,4 +41,13 @@ const insertCar = async (req, res, next) => {
   res.status(200).send({ message: message });
 };
 
-export { insertCar };
+const removeCar = async (req, res, next) => {
+  const user_id = getUserId(req);
+
+  const result = await CarModel.removeCar(user_id);
+  if (result.affectedRows === 0)
+    return res.status(400).send({ message: "car operation failed" });
+  res.status(200).send({ message: "car removed successfully" });
+};
+
+export { insertCar, removeCar };
