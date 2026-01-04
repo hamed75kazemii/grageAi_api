@@ -1,0 +1,26 @@
+{
+  "name": "garage_backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "start": "npx nodemon app.js",
+    "test:db": "node test/mysql_db.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "dependencies": {
+    "bcrypt": "^6.0.0",
+    "dotenv": "^17.2.3",
+    "express": "^5.2.1",
+    "joi": "^18.0.2",
+    "jsonwebtoken": "^9.0.3",
+    "lodash": "^4.17.21",
+    "morgan": "^1.10.1",
+    "mysql2": "^3.16.0",
+    "nodemailer": "^7.0.12",
+    "nodemon": "^3.1.11"
+  }
+}
