@@ -154,6 +154,8 @@ export class AiService {
 ${symptom}
 
 خروجی فقط JSON با فرمت:
+ در detailed_explanation توضحیات بیشتری بده 
+ و گذاشتن شماره در انتهای توضحیات رو انجام نده
 {
   "diagnoses": [
     {
